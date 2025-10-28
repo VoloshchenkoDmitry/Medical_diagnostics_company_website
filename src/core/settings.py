@@ -149,3 +149,16 @@ CONTACT_EMAIL = 'info@medical-center.ru'
 # Error handlers
 handler404 = 'apps.common.views.handler404'
 handler500 = 'apps.common.views.handler500'
+
+LOGIN_URL = 'users:login'
+LOGIN_REDIRECT_URL = 'users:profile'
+LOGOUT_REDIRECT_URL = 'home'
+
+# Настройки email для сброса пароля
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@medical-center.ru'
+SERVER_EMAIL = 'noreply@medical-center.ru'
+
+# Настройки сессии
+SESSION_COOKIE_AGE = 1209600  # 2 недели в секундах
+SESSION_SAVE_EVERY_REQUEST = True
