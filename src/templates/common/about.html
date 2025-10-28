@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}О компании - Медицинский Диагностический Центр{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="display-4 text-center mb-5">О нашей компании</h1>
+
+            <!-- История компании -->
+            <section class="mb-5">
+                <h2 class="mb-4">История компании</h2>
+                <p class="lead">Медицинский Диагностический Центр был основан в 2010 году с целью предоставления качественных медицинских услуг населению.</p>
+                <p>За годы работы мы выросли из небольшого диагностического кабинета в многопрофильный медицинский центр, оснащенный современным оборудованием.</p>
+            </section>
+
+            <!-- Миссия и ценности -->
+            <section class="mb-5">
+                <h2 class="mb-4">Миссия и ценности</h2>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-heart text-primary me-2"></i>Наша миссия</h5>
+                                <p class="card-text">Обеспечение доступной и качественной медицинской помощи с использованием современных технологий.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-star text-primary me-2"></i>Наши ценности</h5>
+                                <p class="card-text">Профессионализм, забота о пациентах, инновации и социальная ответственность.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Команда врачей -->
+            <section class="mb-5">
+                <h2 class="mb-4">Наша команда</h2>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <img src="https://via.placeholder.com/100" alt="Врач" class="rounded-circle mb-3">
+                                <h5 class="card-title">Иванова Мария</h5>
+                                <p class="card-text text-muted">Главный врач, кардиолог</p>
+                                <p class="card-text">Опыт работы: 15 лет</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <img src="https://via.placeholder.com/100" alt="Врач" class="rounded-circle mb-3">
+                                <h5 class="card-title">Петров Алексей</h5>
+                                <p class="card-text text-muted">Невролог</p>
+                                <p class="card-text">Опыт работы: 12 лет</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <img src="https://via.placeholder.com/100" alt="Врач" class="rounded-circle mb-3">
+                                <h5 class="card-title">Сидорова Анна</h5>
+                                <p class="card-text text-muted">Рентгенолог</p>
+                                <p class="card-text">Опыт работы: 10 лет</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

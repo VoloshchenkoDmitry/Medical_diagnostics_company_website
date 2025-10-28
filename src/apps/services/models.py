@@ -4,6 +4,12 @@ from django.utils.text import slugify
 
 class ServiceCategory(models.Model):
     name = models.CharField(max_length=200, verbose_name='Название категории')
+    slug = models.SlugField(
+        max_length=200,
+        unique=True,
+        verbose_name='URL',
+        blank=True  # Временно разрешаем пустые значения
+    )
     description = models.TextField(blank=True, verbose_name='Описание')
     order = models.PositiveIntegerField(default=0, verbose_name='Порядок отображения')
 
@@ -14,6 +20,19 @@ class ServiceCategory(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            # Генерируем slug из имени
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            # Проверяем уникальность slug
+            while ServiceCategory.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
 
 class Service(models.Model):
@@ -47,9 +66,15 @@ class Service(models.Model):
         ordering = ['category', 'name']
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.category})"
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            while Service.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         super().save(*args, **kwargs)

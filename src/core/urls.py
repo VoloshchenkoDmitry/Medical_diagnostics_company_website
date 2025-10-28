@@ -22,11 +22,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # Будем добавлять по мере разработки:
-    # path('', include('apps.common.urls')),
-    # path('services/', include('apps.services.urls')),
-    # path('users/', include('apps.users.urls')),
-    # path('appointments/', include('apps.appointments.urls')),
+    path('', include('apps.common.urls')),  # Это должно включать URL с именем 'home'
+    path('services/', include('apps.services.urls')),
 ]
 
 if settings.DEBUG:
