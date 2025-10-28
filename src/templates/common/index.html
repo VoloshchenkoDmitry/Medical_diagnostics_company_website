@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Главная - Медицинский Диагностический Центр{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-4">Медицинский Диагностический Центр</h1>
+        <p class="lead mb-4">Современная диагностика и качественное лечение для вашего здоровья</p>
+        <a href="{% url 'services:list' %}" class="btn btn-primary btn-lg me-3">Наши услуги</a>
+        <a href="{% url 'common:contacts' %}" class="btn btn-outline-light btn-lg">Записаться на прием</a>
+    </div>
+</section>
+
+<!-- Services Preview -->
+<section class="py-5">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col text-center">
+                <h2 class="display-5">Наши услуги</h2>
+                <p class="lead">Широкий спектр медицинских услуг</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card service-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-heartbeat fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Кардиология</h5>
+                        <p class="card-text">Полное обследование сердечно-сосудистой системы</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card service-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Неврология</h5>
+                        <p class="card-text">Диагностика и лечение заболеваний нервной системы</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card service-card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-x-ray fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Рентгенология</h5>
+                        <p class="card-text">Современные методы лучевой диагностики</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'services:list' %}" class="btn btn-outline-primary">Все услуги</a>
+        </div>
+    </div>
+</section>
+
+<!-- About Preview -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2>О нашем центре</h2>
+                <p class="lead">Мы предоставляем качественные медицинские услуги с 2010 года.</p>
+                <p>Наш центр оснащен современным диагностическим оборудованием, а наши специалисты имеют высшую квалификационную категорию.</p>
+                <a href="{% url 'common:about' %}" class="btn btn-primary">Подробнее о нас</a>
+            </div>
+            <div class="col-md-6">
+                <img src="https://via.placeholder.com/500x300" alt="О центре" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
