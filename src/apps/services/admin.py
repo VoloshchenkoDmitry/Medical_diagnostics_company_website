@@ -7,7 +7,7 @@ class ServiceCategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'order', 'services_count')
     list_editable = ('order',)
     search_fields = ('name', 'description')
-    prepopulated_fields = {'description': ('name',)}
+    prepopulated_fields = {'slug': ('name',)}
 
     def services_count(self, obj):
         return obj.services.count()
@@ -27,11 +27,11 @@ class ServiceAdmin(admin.ModelAdmin):
         ('Основная информация', {
             'fields': ('category', 'name', 'slug', 'description')
         }),
-        ('Детали', {
+        ('Детали услуги', {
             'fields': ('price', 'image', 'is_active')
         }),
         ('Даты', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
-        })
+        }),
     )

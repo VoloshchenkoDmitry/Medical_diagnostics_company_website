@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ service.name }} - Медицинский Диагностический Центр{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Хлебные крошки -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'common:home' %}">Главная</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'services:list' %}">Услуги</a></li>
+                    <li class="breadcrumb-item active">{{ service.name }}</li>
+                </ol>
+            </nav>
+
+            <!-- Детали услуги -->
+            <div class="card">
+                {% if service.image %}
+                <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.name }}">
+                {% else %}
+                <img src="https://via.placeholder.com/800x400" class="card-img-top" alt="{{ service.name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h1 class="card-title display-6">{{ service.name }}</h1>
+                    <p class="lead">{{ service.description }}</p>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Стоимость</h5>
+                                    <p class="h3 text-primary">{{ service.price }} ₽</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Категория</h5>
+                                    <p class="h5">{{ service.category.name }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if user.is_authenticated %}
+                    <div class="mt-4">
+                        <a href="#" class="btn btn-primary btn-lg">Записаться на прием</a>
+                    </div>
+                    {% else %}
+                    <div class="mt-4">
+                        <a href="#" class="btn btn-primary btn-lg">Войдите для записи</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Боковая панель -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Другие услуги</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for other_service in service.category.services.all %}
+                            {% if other_service.id != service.id and other_service.is_active %}
+                            <a href="{% url 'services:detail' other_service.slug %}"
+                               class="list-group-item list-group-item-action">
+                                {{ other_service.name }}
+                                <span class="float-end text-primary">{{ other_service.price }} ₽</span>
+                            </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
