@@ -45,13 +45,18 @@
                         </div>
                     </div>
 
+                    <!-- Кнопка записи -->
                     {% if user.is_authenticated %}
                     <div class="mt-4">
-                        <a href="#" class="btn btn-primary btn-lg">Записаться на прием</a>
+                        <a href="{% url 'appointments:create' service.slug %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-calendar-plus me-2"></i>Записаться на прием
+                        </a>
                     </div>
                     {% else %}
                     <div class="mt-4">
-                        <a href="#" class="btn btn-primary btn-lg">Войдите для записи</a>
+                        <a href="{% url 'users:login' %}?next={{ request.path }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Войдите для записи
+                        </a>
                     </div>
                     {% endif %}
                 </div>
@@ -76,6 +81,21 @@
                             {% endif %}
                         {% endfor %}
                     </div>
+                </div>
+            </div>
+
+            <!-- Контактная информация -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Контакты</h5>
+                </div>
+                <div class="card-body">
+                    <p><i class="fas fa-phone text-primary me-2"></i> +7 (495) 123-45-67</p>
+                    <p><i class="fas fa-clock text-primary me-2"></i> Пн-Пт: 8:00 - 20:00</p>
+                    <p><i class="fas fa-map-marker-alt text-primary me-2"></i> г. Москва, ул. Медицинская, д. 15</p>
+                    <a href="{% url 'common:contacts' %}" class="btn btn-outline-primary btn-sm w-100 mt-2">
+                        Все контакты
+                    </a>
                 </div>
             </div>
         </div>
