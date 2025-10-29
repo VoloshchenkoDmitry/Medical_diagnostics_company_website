@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>Детали записи на прием
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Информация о записи -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Информация о приеме</h5>
+                            <p><strong>Услуга:</strong> {{ appointment.service.name }}</p>
+                            <p><strong>Категория:</strong> {{ appointment.service.category.name }}</p>
+                            <p><strong>Дата:</strong> {{ appointment.desired_date|date:"d.m.Y" }}</p>
+                            <p><strong>Время:</strong> {{ appointment.formatted_time }}</p>
+                            <p><strong>Статус:</strong>
+                                <span class="badge bg-{{ appointment.get_status_color }}">
+                                    {{ appointment.get_status_display }}
+                                </span>
+                            </p>
+                            {% if appointment.is_past_due and appointment.status in ['pending', 'confirmed'] %}
+                            <p class="text-danger"><strong>Примечание:</strong> Эта запись просрочена</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Информация о пациенте</h5>
+                            <p><strong>Имя:</strong> {{ appointment.patient_name }}</p>
+                            <p><strong>Телефон:</strong> {{ appointment.patient_phone }}</p>
+                            <p><strong>Email:</strong> {{ appointment.patient_email }}</p>
+                            {% if appointment.patient_age %}
+                            <p><strong>Возраст:</strong> {{ appointment.patient_age }} лет</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Комментарий -->
+                    {% if appointment.comments %}
+                    <div class="mb-4">
+                        <h5>Комментарий пациента</h5>
+                        <div class="card">
+                            <div class="card-body">
+                                {{ appointment.comments|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Заметки администратора -->
+                    {% if appointment.admin_notes %}
+                    <div class="mb-4">
+                        <h5>Заметки администратора</h5>
+                        <div class="card border-warning">
+                            <div class="card-body">
+                                {{ appointment.admin_notes|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Результаты приема -->
+                    {% if appointment.result %}
+                    <div class="mb-4">
+                        <h5 class="text-success">
+                            <i class="fas fa-file-medical-alt me-2"></i>Результаты приема
+                        </h5>
+                        <div class="card border-success">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <h6>Диагноз:</h6>
+                                    <div class="ps-3">
+                                        {{ appointment.result.diagnosis|linebreaks }}
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <h6>Рекомендации:</h6>
+                                    <div class="ps-3">
+                                        {{ appointment.result.recommendations|linebreaks }}
+                                    </div>
+                                </div>
+
+                                {% if appointment.result.prescription %}
+                                <div class="mb-3">
+                                    <h6>Назначения:</h6>
+                                    <div class="ps-3">
+                                        {{ appointment.result.prescription|linebreaks }}
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if appointment.result.results_file %}
+                                <div class="mt-3">
+                                    <h6>Файл с результатами:</h6>
+                                    <a href="{{ appointment.result.results_file.url }}"
+                                       target="_blank"
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-download me-1"></i>Скачать результаты
+                                    </a>
+                                </div>
+                                {% endif %}
+
+                                <div class="mt-3 text-muted small">
+                                    <i class="fas fa-clock me-1"></i>
+                                    Результаты добавлены: {{ appointment.result.created_at|date:"d.m.Y H:i" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="mb-4">
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-info-circle me-2"></i>Результаты приема
+                            </h6>
+                            <p class="mb-0">Результаты вашего приема будут доступны здесь после обработки врачом.</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Действия -->
+                    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                        <div>
+                            <a href="{% url 'appointments:list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Назад к списку
+                            </a>
+                        </div>
+
+                        <div>
+                            {% if appointment.can_be_cancelled %}
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal">
+                                <i class="fas fa-times me-2"></i>Отменить запись
+                            </button>
+                            {% endif %}
+
+                            {% if not appointment.result and appointment.status == 'completed' %}
+                            <span class="text-muted ms-2">
+                                <i class="fas fa-clock me-1"></i>Ожидаются результаты
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Дополнительная информация -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Дополнительная информация</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Дата создания записи:</strong> {{ appointment.created_at|date:"d.m.Y H:i" }}</p>
+                            <p><strong>Последнее обновление:</strong> {{ appointment.updated_at|date:"d.m.Y H:i" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Стоимость услуги:</strong> {{ appointment.service.price }} ₽</p>
+                            <p><strong>Категория услуги:</strong> {{ appointment.service.category.name }}</p>
+                        </div>
+                    </div>
+
+                    {% if not appointment.can_be_cancelled and appointment.status != 'cancelled' %}
+                    <div class="alert alert-warning mt-3">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Внимание
+                        </h6>
+                        <p class="mb-0">
+                            Эта запись не может быть отменена через сайт.
+                            Пожалуйста, свяжитесь с нами по телефону для изменения записи.
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal для отмены -->
+{% if appointment.can_be_cancelled %}
+<div class="modal fade" id="cancelModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Отмена записи</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'appointments:cancel' appointment.pk %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Вы собираетесь отменить запись на прием.
+                    </div>
+
+                    <p>Запись на <strong>{{ appointment.service.name }}</strong></p>
+                    <p>Дата: <strong>{{ appointment.desired_date|date:"d.m.Y" }} {{ appointment.formatted_time }}</strong></p>
+
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Причина отмены (необязательно):</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="3"
+                                  placeholder="Укажите причину отмены записи, если хотите..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Вернуться</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-times me-2"></i>Подтвердить отмену
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
