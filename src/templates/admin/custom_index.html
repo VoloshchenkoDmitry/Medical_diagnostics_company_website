@@ -1,0 +1,142 @@
+{% extends "admin/index.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div class="module">
+    <h2>📊 Статистика системы</h2>
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <div class="stat-icon users">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.total_users }}</h3>
+                <p>Пользователей</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon services">
+                <i class="fas fa-stethoscope"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.total_services }}</h3>
+                <p>Услуг</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon appointments">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.total_appointments }}</h3>
+                <p>Записей</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon pending">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.pending_appointments }}</h3>
+                <p>Ожидают подтверждения</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="module">
+    <h2>🚀 Быстрые действия</h2>
+    <div class="quick-actions">
+        {% for link in quick_links %}
+        <a href="{{ link.url }}" class="quick-action-btn {{ link.color }}">
+            <i class="{{ link.icon }}"></i>
+            <span>{{ link.title }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+{{ block.super }}
+
+<style>
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+}
+
+.stat-icon.users { background: #007bff; }
+.stat-icon.services { background: #28a745; }
+.stat-icon.appointments { background: #ffc107; }
+.stat-icon.pending { background: #dc3545; }
+
+.stat-info h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.stat-info p {
+    margin: 5px 0 0 0;
+    color: #666;
+}
+
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.quick-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #495057;
+    transition: all 0.3s ease;
+}
+
+.quick-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: #495057;
+}
+
+.quick-action-btn.primary { border-color: #007bff; }
+.quick-action-btn.success { border-color: #28a745; }
+.quick-action-btn.info { border-color: #17a2b8; }
+.quick-action-btn.warning { border-color: #ffc107; }
+
+.quick-action-btn i {
+    font-size: 20px;
+}
+</style>
+{% endblock %}
