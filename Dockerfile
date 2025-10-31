@@ -10,8 +10,7 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
-    libpq-dev \
-    postgresql-client \
+    postgresql-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
@@ -19,14 +18,14 @@ COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Copy project files (copy contents of src to /app)
+# Copy project
 COPY src/ .
 
 # Create necessary directories
-RUN mkdir -p static media
+RUN mkdir -p /app/static /app/media /app/logs
 
 # Expose port
 EXPOSE 8000
 
-# Command to run migrations and start server
-CMD ["sh", "-c", "sleep 10 && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+# Run application
+CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:8000"]

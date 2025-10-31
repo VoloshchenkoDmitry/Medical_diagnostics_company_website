@@ -1,0 +1,24 @@
+[
+    {
+        "model": "services.servicecategory",
+        "pk": 1,
+        "fields": {
+            "name": "Лабораторная диагностика",
+            "description": "Современные лабораторные исследования",
+            "order": 1,
+            "created_at": "2024-01-15T10:00:00Z",
+            "updated_at": "2024-01-15T10:00:00Z"
+        }
+    },
+    {
+        "model": "services.servicecategory",
+        "pk": 2,
+        "fields": {
+            "name": "Инструментальная диагностика",
+            "description": "Диагностика с использованием современного оборудования",
+            "order": 2,
+            "created_at": "2024-01-15T10:00:00Z",
+            "updated_at": "2024-01-15T10:00:00Z"
+        }
+    }
+]

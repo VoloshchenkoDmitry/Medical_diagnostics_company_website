@@ -5,6 +5,8 @@ from django.contrib import messages
 from django.views.generic import CreateView, ListView, DetailView, View
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
+from django.http import JsonResponse
+import datetime
 from .models import Appointment
 from .forms import AppointmentForm, AppointmentCancelForm
 from apps.services.models import Service
