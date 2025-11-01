@@ -15,22 +15,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.contrib import admin
-from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
 
 # Используем стандартную админку, но с кастомизацией
-admin.site.site_header = 'Панель управления медицинским центром'
-admin.site.site_title = 'Администрирование медицинского центра'
-admin.site.index_title = 'Панель управления'
+admin.site.site_header = "Панель управления медицинским центром"
+admin.site.site_title = "Администрирование медицинского центра"
+admin.site.index_title = "Панель управления"
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('apps.common.urls')),
-    path('services/', include('apps.services.urls')),
-    path('users/', include('apps.users.urls')),
-    path('appointments/', include('apps.appointments.urls')),
+    path("admin/", admin.site.urls),
+    path("", include("apps.common.urls")),
+    path("services/", include("apps.services.urls")),
+    path("users/", include("apps.users.urls")),
+    path("appointments/", include("apps.appointments.urls")),
 ]
 
 if settings.DEBUG:

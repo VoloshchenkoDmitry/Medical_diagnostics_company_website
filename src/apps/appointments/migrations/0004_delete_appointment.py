@@ -4,13 +4,15 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('appointments', '0003_alter_appointment_options_alter_appointment_service_and_more'),
+        (
+            "appointments",
+            "0003_alter_appointment_options_alter_appointment_service_and_more",
+        ),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='Appointment',
+            name="Appointment",
         ),
     ]

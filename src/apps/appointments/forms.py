@@ -28,7 +28,7 @@ class AppointmentForm(forms.ModelForm):
         self.fields['comments'].widget.attrs.update({
             'class': 'form-control',
             'rows': 4,
-            'placeholder': _('Укажите дополнительную информацию, если необходимо')
+            'placeholder': _('Дополнительная информация'),
         })
 
     class Meta:
@@ -40,7 +40,7 @@ class AppointmentForm(forms.ModelForm):
             'patient_phone',
             'patient_email',
             'patient_age',
-            'comments'
+            'comments',
         ]
         labels = {
             'desired_date': _('Желаемая дата'),
@@ -59,10 +59,10 @@ class AppointmentForm(forms.ModelForm):
             if desired_date < timezone.now().date():
                 raise forms.ValidationError(_('Нельзя записаться на прошедшую дату'))
 
-            # Проверяем, что дата не слишком далеко в будущем (максимум 3 месяца)
+            # Проверяем, что дата не слишком далеко в будущем
             max_date = timezone.now().date() + datetime.timedelta(days=90)
             if desired_date > max_date:
-                raise forms.ValidationError(_('Запись возможна не более чем на 3 месяца вперед'))
+                raise forms.ValidationError(_('Запись на 3 месяца вперед'))
 
         return desired_date
 
@@ -74,12 +74,12 @@ class AppointmentForm(forms.ModelForm):
         # Проверяем, свободно ли время
         if desired_date and desired_time:
             if Appointment.objects.filter(
-                    desired_date=desired_date,
-                    desired_time=desired_time,
-                    status__in=['pending', 'confirmed']
+                desired_date=desired_date,
+                desired_time=desired_time,
+                status__in=['pending', 'confirmed']
             ).exists():
                 raise forms.ValidationError(
-                    _('Выбранное время уже занято. Пожалуйста, выберите другое время.')
+                    _('Выбранное время уже занято')
                 )
 
         return cleaned_data
@@ -91,7 +91,7 @@ class AppointmentForm(forms.ModelForm):
         if self.service:
             appointment.service = self.service
 
-        # Заполняем данные пациента из профиля пользователя, если не указаны
+        # Заполняем данные пациента из профиля
         if not appointment.patient_name and self.user:
             appointment.patient_name = self.user.get_full_name() or self.user.username
         if not appointment.patient_email and self.user:
@@ -111,7 +111,7 @@ class AppointmentCancelForm(forms.Form):
         widget=forms.Textarea(attrs={
             'class': 'form-control',
             'rows': 3,
-            'placeholder': _('Укажите причину отмены записи')
+            'placeholder': _('Причина отмены записи'),
         }),
         required=False
     )
