@@ -1,14 +1,15 @@
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.views.generic import CreateView, ListView, DetailView, View
 from django.utils.translation import gettext_lazy as _
+from django.db.models import Q
 from django.http import JsonResponse
+import datetime
 from .models import Appointment
 from .forms import AppointmentForm, AppointmentCancelForm
 from apps.services.models import Service
-import datetime
 
 
 class AppointmentCreateView(LoginRequiredMixin, CreateView):
@@ -61,9 +62,7 @@ class AppointmentListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Appointment.objects.filter(
-            user=self.request.user
-        ).select_related('service')
+        return Appointment.objects.filter(user=self.request.user).select_related('service')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -88,9 +87,7 @@ class AppointmentDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'appointment'
 
     def get_queryset(self):
-        return Appointment.objects.filter(
-            user=self.request.user
-        ).select_related('service')
+        return Appointment.objects.filter(user=self.request.user).select_related('service')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -117,8 +114,7 @@ class AppointmentCancelView(LoginRequiredMixin, View):
         form = AppointmentCancelForm(request.POST)
         if form.is_valid():
             appointment.status = 'cancelled'
-            reason = form.cleaned_data.get('reason', 'Не указана')
-            appointment.admin_notes = f'Отменено пользователем. Причина: {reason}'
+            appointment.admin_notes = f"Отменено пользователем. Причина: {form.cleaned_data.get('reason', 'Не указана')}"
             appointment.save()
 
             messages.success(

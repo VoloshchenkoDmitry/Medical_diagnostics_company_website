@@ -1,4 +1,4 @@
-name: Test and Lint
+name: Tests and Code Quality
 
 on:
   push:
@@ -38,23 +38,23 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run migrations
+    - name: Run tests
+      env:
+        DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
+        SECRET_KEY: test-secret-key
+        DEBUG: False
       run: |
         cd src
-        python manage.py migrate
-      env:
-        DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
-        SECRET_KEY: test-secret-key
-        DEBUG: "True"
+        python -m pytest -v --cov=apps --cov-report=xml --cov-report=html
 
-    - name: Run tests
+    - name: Code quality checks
       run: |
-        pytest --cov=src --cov-report=term --cov-fail-under=75
-      env:
-        DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
-        SECRET_KEY: test-secret-key
-        DEBUG: "True"
+        cd src
+        python -m flake8 apps/ --count --show-source --statistics
+        python -m isort --check-only apps/
+        python -m black --check apps/
 
-    - name: Run flake8
-      run: |
-        flake8 .
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./src/coverage.xml

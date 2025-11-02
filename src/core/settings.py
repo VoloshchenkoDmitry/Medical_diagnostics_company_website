@@ -122,7 +122,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Authentication settings
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'users:profile'
-LOGOUT_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'common:home'
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -205,3 +205,21 @@ if 'test' in sys.argv or 'test_coverage' in sys.argv:
 ADMIN_SITE_HEADER = 'Медицинский Диагностический Центр'
 ADMIN_SITE_TITLE = 'Панель управления МДЦ'
 ADMIN_INDEX_TITLE = 'Администрирование'
+
+# Testing configuration
+if 'test' in sys.argv or 'test_coverage' in sys.argv:
+    # Используем SQLite для тестов для скорости
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
+
+    # Ускоряем тесты
+    PASSWORD_HASHERS = [
+        'django.contrib.auth.hashers.MD5PasswordHasher',
+    ]
+
+    # Отключаем отправку email
+    EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
