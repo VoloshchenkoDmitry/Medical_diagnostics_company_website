@@ -1,0 +1,20 @@
+[MASTER]
+load-plugins=pylint_django
+
+[MESSAGES CONTROL]
+disable=
+    C0103,
+    C0301,
+    R0903,
+    R0801,
+    W0613,
+    W0222
+
+[FORMAT]
+max-line-length=127
+
+[TYPECHECK]
+generated-members=objects
+
+[DJANGO]
+settings-module=core.settings

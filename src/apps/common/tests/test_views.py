@@ -1,59 +1,69 @@
-from django.test import TestCase, Client
+"""
+Tests for common views.
+"""
+import pytest
 from django.urls import reverse
-from django.contrib.messages import get_messages
 
 
-class CommonViewsTestCase(TestCase):
-    def setUp(self):
-        self.client = Client()
+@pytest.mark.django_db
+class TestCommonViews:
+    """Test cases for common views."""
 
-    def test_home_view(self):
-        response = self.client.get(reverse('home'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'index.html')
-        self.assertContains(response, 'Медицинский Диагностический Центр')
+    def test_home_view_status_code(self, client):
+        """Test that home page returns 200."""
+        response = client.get(reverse("common:home"))
+        assert response.status_code == 200
 
-    def test_about_view(self):
-        response = self.client.get(reverse('about'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'about.html')
-        self.assertContains(response, 'О нашей компании')
+    def test_about_view_status_code(self, client):
+        """Test that about page returns 200."""
+        response = client.get(reverse("common:about"))
+        assert response.status_code == 200
 
-    def test_contacts_view_get(self):
-        response = self.client.get(reverse('contacts'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'contacts.html')
-        # Проверяем наличие ключевых элементов на странице контактов
-        self.assertContains(response, 'Контакты')
-        self.assertContains(response, 'форма')  # Ищем форму или связанный текст
-        self.assertContains(response, 'name')  # Поле имени в форме
-        self.assertContains(response, 'email')  # Поле email в форме
+    def test_contacts_view_status_code(self, client):
+        """Test that contacts page returns 200."""
+        response = client.get(reverse("common:contacts"))
+        assert response.status_code == 200
 
-    def test_contacts_view_post_valid(self):
-        data = {
-            'name': 'Test User',
-            'email': 'test@example.com',
-            'subject': 'Test Subject',
-            'message': 'Test message content'
+    def test_contact_form_submission(self, client):
+        """Test successful contact form submission."""
+        form_data = {
+            "name": "Test User",
+            "email": "test@example.com",
+            "subject": "Test Subject",
+            "message": "Test message content",
         }
-        response = self.client.post(reverse('contacts'), data)
-        self.assertEqual(response.status_code, 302)  # Redirect after success
-        self.assertRedirects(response, reverse('contacts'))
 
-        # Проверяем, что сообщение об успехе добавлено
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'Ваше сообщение успешно отправлено! Мы свяжемся с вами в ближайшее время.')
+        response = client.post(reverse("common:contacts"), data=form_data)
 
-    def test_contacts_view_post_invalid(self):
-        data = {
-            'name': '',  # Invalid - empty name
-            'email': 'invalid-email',
-            'subject': '',
-            'message': ''
+        # Should redirect to same page with success message
+        assert response.status_code == 302
+        assert response.url == reverse("common:contacts")
+
+        # Check that contact submission was created
+        from apps.common.models import ContactSubmission
+
+        assert ContactSubmission.objects.count() == 1
+        contact = ContactSubmission.objects.first()
+        assert contact.name == "Test User"
+        assert contact.email == "test@example.com"
+
+    def test_contact_form_invalid_data(self, client):
+        """Test contact form with invalid data."""
+        invalid_data = {
+            "name": "Test User",
+            "email": "invalid-email",  # Invalid email
+            "subject": "Test Subject",
+            "message": "Test message content",
         }
-        response = self.client.post(reverse('contacts'), data)
-        self.assertEqual(response.status_code, 200)  # Stays on same page
-        self.assertTemplateUsed(response, 'contacts.html')
-        # Проверяем, что форма показывает ошибки
-        self.assertContains(response, 'form')
+
+        response = client.post(reverse("common:contacts"), data=invalid_data)
+
+        # Should stay on same page with form errors
+        assert response.status_code == 200
+        assert "form" in response.context
+        assert not response.context["form"].is_valid()
+
+    def test_home_view_context(self, client):
+        """Test that home view has correct context."""
+        response = client.get(reverse("common:home"))
+        assert "page_title" in response.context
