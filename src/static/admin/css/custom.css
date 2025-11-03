@@ -1,0 +1,43 @@
+/* Кастомные стили для админки */
+#header {
+    background: #2c3e50;
+}
+
+.module h2, .module caption, .inline-group h2 {
+    background: #34495e;
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: #3498db;
+}
+
+.button:hover, input[type=submit]:hover, input[type=button]:hover {
+    background: #2980b9;
+}
+
+/* Стили для бейджей статусов */
+.badge-pending { background: #ffc107; color: #000; }
+.badge-confirmed { background: #28a745; color: #fff; }
+.badge-completed { background: #17a2b8; color: #fff; }
+.badge-cancelled { background: #dc3545; color: #fff; }
+.badge-no_show { background: #6c757d; color: #fff; }
+
+/* Улучшение отображения изображений */
+.field-image_preview img,
+.field-avatar_preview img {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Статистика на главной */
+.dashboard-stats {
+    margin: 20px 0;
+}
+
+.stat-card {
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}

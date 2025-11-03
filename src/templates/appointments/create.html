@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .time-slot {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .time-slot:hover {
+        transform: scale(1.05);
+    }
+    .time-slot.selected {
+        background-color: #198754 !important;
+        color: white;
+        border-color: #198754;
+    }
+    .time-slot.booked {
+        background-color: #6c757d !important;
+        color: white;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-calendar-plus me-2"></i>Запись на прием
+                        {% if service %} - {{ service.name }}{% endif %}
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    {% if service %}
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">Информация об услуге</h5>
+                        <p class="mb-0"><strong>Услуга:</strong> {{ service.name }}</p>
+                        <p class="mb-0"><strong>Стоимость:</strong> {{ service.price }} ₽</p>
+                        {% if service.description %}
+                        <p class="mb-0 mt-2"><strong>Описание:</strong> {{ service.description|truncatewords:30 }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <form method="post" id="appointment-form">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.desired_date.id_for_label }}" class="form-label">{{ form.desired_date.label }}</label>
+                                    {{ form.desired_date }}
+                                    {% if form.desired_date.errors %}
+                                    <div class="text-danger small">{{ form.desired_date.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">{{ form.desired_time.label }}</label>
+                                    <div id="time-slots-container" class="d-flex flex-wrap gap-2">
+                                        <div class="text-muted">Выберите дату для просмотра доступного времени</div>
+                                    </div>
+                                    <input type="hidden" name="desired_time" id="id_desired_time" required>
+                                    {% if form.desired_time.errors %}
+                                    <div class="text-danger small">{{ form.desired_time.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.patient_name.id_for_label }}" class="form-label">{{ form.patient_name.label }}</label>
+                                    {{ form.patient_name }}
+                                    {% if form.patient_name.errors %}
+                                    <div class="text-danger small">{{ form.patient_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.patient_phone.id_for_label }}" class="form-label">{{ form.patient_phone.label }}</label>
+                                        {{ form.patient_phone }}
+                                        {% if form.patient_phone.errors %}
+                                        <div class="text-danger small">{{ form.patient_phone.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="{{ form.patient_age.id_for_label }}" class="form-label">{{ form.patient_age.label }}</label>
+                                        {{ form.patient_age }}
+                                        {% if form.patient_age.errors %}
+                                        <div class="text-danger small">{{ form.patient_age.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ form.patient_email.id_for_label }}" class="form-label">{{ form.patient_email.label }}</label>
+                                    {{ form.patient_email }}
+                                    {% if form.patient_email.errors %}
+                                    <div class="text-danger small">{{ form.patient_email.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.comments.id_for_label }}" class="form-label">{{ form.comments.label }}</label>
+                            {{ form.comments }}
+                            {% if form.comments.errors %}
+                            <div class="text-danger small">{{ form.comments.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% if service %}{% url 'services:detail' service.slug %}{% else %}{% url 'services:list' %}{% endif %}"
+                               class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Назад
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-calendar-check me-2"></i>Записаться на прием
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('id_desired_date');
+    const timeSlotsContainer = document.getElementById('time-slots-container');
+    const desiredTimeInput = document.getElementById('id_desired_time');
+    const serviceSlug = '{{ service.slug }}';
+
+    let selectedTimeSlot = null;
+
+    dateInput.addEventListener('change', function() {
+        const selectedDate = this.value;
+
+        if (!selectedDate) {
+            timeSlotsContainer.innerHTML = '<div class="text-muted">Выберите дату для просмотра доступного времени</div>';
+            desiredTimeInput.value = '';
+            return;
+        }
+
+        // Показываем загрузку
+        timeSlotsContainer.innerHTML = '<div class="text-muted">Загрузка доступного времени...</div>';
+
+        // Запрашиваем доступные слоты
+        fetch(`/appointments/api/available-slots/${serviceSlug}/?date=${selectedDate}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.available_slots && data.available_slots.length > 0) {
+                    renderTimeSlots(data.available_slots);
+                } else {
+                    timeSlotsContainer.innerHTML = '<div class="text-danger">На выбранную дату нет доступного времени</div>';
+                    desiredTimeInput.value = '';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                timeSlotsContainer.innerHTML = '<div class="text-danger">Ошибка загрузки доступного времени</div>';
+                desiredTimeInput.value = '';
+            });
+    });
+
+    function renderTimeSlots(availableSlots) {
+        timeSlotsContainer.innerHTML = '';
+        selectedTimeSlot = null;
+
+        availableSlots.forEach(slot => {
+            const slotElement = document.createElement('button');
+            slotElement.type = 'button';
+            slotElement.className = 'btn btn-outline-primary time-slot';
+            slotElement.textContent = slot;
+            slotElement.dataset.time = slot;
+
+            slotElement.addEventListener('click', function() {
+                // Снимаем выделение с предыдущего слота
+                if (selectedTimeSlot) {
+                    selectedTimeSlot.classList.remove('selected');
+                }
+
+                // Выделяем текущий слот
+                this.classList.add('selected');
+                selectedTimeSlot = this;
+                desiredTimeInput.value = this.dataset.time;
+            });
+
+            timeSlotsContainer.appendChild(slotElement);
+        });
+    }
+});
+</script>
+{% endblock %}
