@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "src"
+version = "0.1.0"
+description = ""
+authors = ["VoloshchenkoDmitry <eldorado181118@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.13"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 127
+target-version = ['py39']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  | migrations
+  | .git
+  | .venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 127

@@ -87,7 +87,7 @@
                                 <span class="badge bg-{{ appointment.get_status_color }}">
                                     {{ appointment.get_status_display }}
                                 </span>
-                                {% if appointment.is_past_due and appointment.status in ['pending', 'confirmed'] %}
+                                {% if appointment.is_past_due and appointment.status == 'pending' or appointment.status == 'confirmed' %}
                                 <br>
                                 <small class="text-danger">Просрочено</small>
                                 {% endif %}
