@@ -30,6 +30,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0").split(
 
 # Application definition
 INSTALLED_APPS = [
+    "django_extensions",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -236,3 +237,8 @@ MEDICAL_CENTER_SETTINGS = {
         "TIME_SLOT_DURATION": 30,
     },
 }
+
+ENVIRONMENT = os.getenv("DJANGO_ENV", "development")
+
+if ENVIRONMENT == "production":
+    from .production_settings import *
